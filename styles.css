@@ -299,23 +299,27 @@ nav ul li a:hover::after {
 
 .carousel-item {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     opacity: 0;
-    transition: opacity 0.5s ease;
-    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+    z-index: 1;
 }
 
 .carousel-item.active {
     opacity: 1;
-    pointer-events: auto;
+    visibility: visible;
+    z-index: 2;
 }
 
-.carousel-item img,
 .carousel-item video {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
 .carousel-control {

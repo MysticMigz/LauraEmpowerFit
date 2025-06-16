@@ -63,8 +63,19 @@ navLinks.forEach(link => {
 
 // Carousel Functionality
 document.addEventListener('DOMContentLoaded', function() {
-    const carousel = document.querySelector('.carousel');
+    const carousel = document.querySelector('.hero .carousel');
+    if (!carousel) {
+        console.error('Carousel container not found');
+        return;
+    }
+
     const items = carousel.querySelectorAll('.carousel-item');
+    if (items.length === 0) {
+        console.error('No carousel items found');
+        return;
+    }
+    console.log(`Found ${items.length} carousel items`);
+
     const prevButton = carousel.querySelector('.carousel-control.prev');
     const nextButton = carousel.querySelector('.carousel-control.next');
     const dotsContainer = carousel.querySelector('.carousel-dots');
@@ -83,10 +94,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const dots = dotsContainer.querySelectorAll('.carousel-dot');
     
     function goToSlide(index) {
+        console.log(`Going to slide ${index}`);
+        
         // Pause all videos
         items.forEach(item => {
             const video = item.querySelector('video');
-            if (video) video.pause();
+            if (video) {
+                video.pause();
+                console.log('Paused video in item', item);
+            }
         });
         
         // Remove active class from all items and dots
@@ -99,7 +115,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Play video if current slide is a video
         const currentVideo = items[index].querySelector('video');
-        if (currentVideo) currentVideo.play();
+        if (currentVideo) {
+            currentVideo.play().catch(error => {
+                console.error('Error playing video:', error);
+            });
+            console.log('Playing video in item', index);
+        }
         
         currentIndex = index;
     }
@@ -113,8 +134,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Event listeners
-    prevButton.addEventListener('click', prevSlide);
-    nextButton.addEventListener('click', nextSlide);
+    prevButton.addEventListener('click', () => {
+        console.log('Previous button clicked');
+        prevSlide();
+    });
+    
+    nextButton.addEventListener('click', () => {
+        console.log('Next button clicked');
+        nextSlide();
+    });
     
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
@@ -122,14 +150,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'ArrowRight') nextSlide();
     });
     
-    // Auto advance slides (optional)
+    // Auto advance slides
     let autoplayInterval;
     
     function startAutoplay() {
+        console.log('Starting autoplay');
         autoplayInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
     }
     
     function stopAutoplay() {
+        console.log('Stopping autoplay');
         clearInterval(autoplayInterval);
     }
     
@@ -165,6 +195,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+
+    // Initialize first slide
+    goToSlide(0);
 });
 
 // Sticky Header with reveal animation
