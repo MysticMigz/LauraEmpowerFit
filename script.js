@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const items = Array.from(carousel.querySelectorAll('.carousel-item'));
         const prevBtn = carousel.querySelector('.carousel-control.prev');
         const nextBtn = carousel.querySelector('.carousel-control.next');
+        const dotsContainer = carousel.querySelector('.carousel-dots');
         
         console.log('Found elements:', {
             itemsCount: items.length,
@@ -91,42 +92,203 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Starting with index:', currentIndex);
 
-        // Simple slide change function
-        function changeSlide(direction) {
-            console.log('Changing slide:', direction);
+        // Initialize videos with better mobile handling
+        items.forEach((item, index) => {
+            const video = item.querySelector('video');
+            if (video) {
+                // Force muted state for autoplay
+                video.muted = true;
+                video.setAttribute('muted', '');
+                
+                // Remove controls on mobile
+                if (window.innerWidth <= 768) {
+                    video.removeAttribute('controls');
+                }
+                
+                // Optimize video loading
+                video.setAttribute('playsinline', '');
+                video.setAttribute('preload', 'metadata');
+                
+                // Handle video loading
+                video.addEventListener('loadedmetadata', () => {
+                    console.log(`Video ${index + 1} metadata loaded`);
+                });
+                
+                video.addEventListener('canplay', () => {
+                    console.log(`Video ${index + 1} can play`);
+                    if (index === currentIndex) {
+                        video.play().catch(e => console.log('Initial play prevented:', e));
+                    }
+                });
+                
+                video.addEventListener('error', (e) => {
+                    console.error(`Video ${index + 1} error:`, e);
+                });
+            }
+        });
+
+        // Create dots for navigation
+        items.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('carousel-dot');
+            if (index === currentIndex) dot.classList.add('active');
+            dot.addEventListener('click', () => changeSlide(index));
+            dotsContainer.appendChild(dot);
+        });
+
+        const dots = Array.from(dotsContainer.querySelectorAll('.carousel-dot'));
+
+        // Handle slide changes
+        let isTransitioning = false;
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let autoplayInterval;
+
+        async function changeSlide(newIndex, direction = null) {
+            if (isTransitioning || newIndex === currentIndex) return;
+            isTransitioning = true;
             
-            // Remove active class from current slide
-            items[currentIndex].classList.remove('active');
+            console.log(`Changing to slide ${newIndex} from ${currentIndex}`);
             
-            // Calculate new index
-            if (direction === 'next') {
-                currentIndex = (currentIndex + 1) % items.length;
-            } else {
-                currentIndex = (currentIndex - 1 + items.length) % items.length;
+            // Handle videos
+            const currentVideo = items[currentIndex].querySelector('video');
+            const newVideo = items[newIndex].querySelector('video');
+            
+            // Pause current video
+            if (currentVideo) {
+                currentVideo.pause();
+                currentVideo.currentTime = 0;
             }
             
-            // Add active class to new slide
-            items[currentIndex].classList.add('active');
+            // Update classes
+            items[currentIndex].classList.remove('active');
+            dots[currentIndex].classList.remove('active');
             
-            console.log('New index:', currentIndex);
+            items[newIndex].classList.add('active');
+            dots[newIndex].classList.add('active');
+            
+            // Play new video
+            if (newVideo) {
+                try {
+                    newVideo.currentTime = 0;
+                    await newVideo.play();
+                } catch (error) {
+                    console.log('Video play prevented:', error);
+                }
+            }
+            
+            currentIndex = newIndex;
+            
+            // Release transition lock
+            setTimeout(() => {
+                isTransitioning = false;
+            }, 500);
         }
 
-        // Add click handlers
+        // Touch handling
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].clientX;
+            stopAutoplay();
+        }
+
+        function handleTouchMove(e) {
+            if (!touchStartX) return;
+            e.preventDefault();
+            touchEndX = e.touches[0].clientX;
+        }
+
+        function handleTouchEnd() {
+            if (!touchStartX || !touchEndX) {
+                touchStartX = 0;
+                touchEndX = 0;
+                return;
+            }
+
+            const diff = touchStartX - touchEndX;
+            const threshold = carousel.offsetWidth * 0.2; // 20% of carousel width
+
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0) {
+                    changeSlide((currentIndex + 1) % items.length);
+                } else {
+                    changeSlide((currentIndex - 1 + items.length) % items.length);
+                }
+            }
+
+            touchStartX = 0;
+            touchEndX = 0;
+            startAutoplay();
+        }
+
+        // Autoplay handling
+        function startAutoplay() {
+            stopAutoplay();
+            autoplayInterval = setInterval(() => {
+                changeSlide((currentIndex + 1) % items.length);
+            }, 8000);
+        }
+
+        function stopAutoplay() {
+            if (autoplayInterval) {
+                clearInterval(autoplayInterval);
+                autoplayInterval = null;
+            }
+        }
+
+        // Event Listeners
         if (prevBtn) {
-            prevBtn.onclick = (e) => {
+            prevBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('Prev button clicked');
-                changeSlide('prev');
-            };
+                stopAutoplay();
+                changeSlide((currentIndex - 1 + items.length) % items.length);
+                startAutoplay();
+            });
         }
 
         if (nextBtn) {
-            nextBtn.onclick = (e) => {
+            nextBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('Next button clicked');
-                changeSlide('next');
-            };
+                stopAutoplay();
+                changeSlide((currentIndex + 1) % items.length);
+                startAutoplay();
+            });
         }
+
+        // Touch events
+        carousel.addEventListener('touchstart', handleTouchStart, { passive: false });
+        carousel.addEventListener('touchmove', handleTouchMove, { passive: false });
+        carousel.addEventListener('touchend', handleTouchEnd);
+
+        // Mouse events for desktop
+        carousel.addEventListener('mouseenter', stopAutoplay);
+        carousel.addEventListener('mouseleave', startAutoplay);
+
+        // Keyboard navigation
+        carousel.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                stopAutoplay();
+                changeSlide((currentIndex - 1 + items.length) % items.length);
+                startAutoplay();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                stopAutoplay();
+                changeSlide((currentIndex + 1) % items.length);
+                startAutoplay();
+            }
+        });
+
+        // Visibility change handling
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopAutoplay();
+            } else {
+                startAutoplay();
+            }
+        });
+
+        // Start autoplay
+        startAutoplay();
     }
 
     // Initialize carousel
