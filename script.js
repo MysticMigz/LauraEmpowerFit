@@ -61,6 +61,78 @@ navLinks.forEach(link => {
     });
 });
 
+console.log('Script loaded');
+
+// Carousel Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded');
+    
+    function initCarousel() {
+        const carousel = document.querySelector('.carousel');
+        console.log('Looking for carousel:', carousel);
+        
+        if (!carousel) {
+            console.error('No carousel found on page');
+            return;
+        }
+
+        const items = Array.from(carousel.querySelectorAll('.carousel-item'));
+        const prevBtn = carousel.querySelector('.carousel-control.prev');
+        const nextBtn = carousel.querySelector('.carousel-control.next');
+        
+        console.log('Found elements:', {
+            itemsCount: items.length,
+            prevBtn: !!prevBtn,
+            nextBtn: !!nextBtn
+        });
+
+        let currentIndex = items.findIndex(item => item.classList.contains('active'));
+        if (currentIndex === -1) currentIndex = 0;
+        
+        console.log('Starting with index:', currentIndex);
+
+        // Simple slide change function
+        function changeSlide(direction) {
+            console.log('Changing slide:', direction);
+            
+            // Remove active class from current slide
+            items[currentIndex].classList.remove('active');
+            
+            // Calculate new index
+            if (direction === 'next') {
+                currentIndex = (currentIndex + 1) % items.length;
+            } else {
+                currentIndex = (currentIndex - 1 + items.length) % items.length;
+            }
+            
+            // Add active class to new slide
+            items[currentIndex].classList.add('active');
+            
+            console.log('New index:', currentIndex);
+        }
+
+        // Add click handlers
+        if (prevBtn) {
+            prevBtn.onclick = (e) => {
+                e.preventDefault();
+                console.log('Prev button clicked');
+                changeSlide('prev');
+            };
+        }
+
+        if (nextBtn) {
+            nextBtn.onclick = (e) => {
+                e.preventDefault();
+                console.log('Next button clicked');
+                changeSlide('next');
+            };
+        }
+    }
+
+    // Initialize carousel
+    initCarousel();
+});
+
 // Sticky Header with reveal animation
 const header = document.querySelector('header');
 const scrollThreshold = 50;
