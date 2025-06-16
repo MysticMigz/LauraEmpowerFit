@@ -69,6 +69,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    // Make carousel focusable
+    carousel.setAttribute('tabindex', '0');
+    
+    // Focus carousel when clicking on it
+    carousel.addEventListener('click', () => {
+        carousel.focus();
+    });
+
     const items = carousel.querySelectorAll('.carousel-item');
     if (items.length === 0) {
         console.error('No carousel items found');
@@ -81,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const dotsContainer = carousel.querySelector('.carousel-dots');
     
     let currentIndex = 0;
+    let isTransitioning = false;
     
     // Create dots
     items.forEach((_, index) => {
@@ -93,36 +102,70 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const dots = dotsContainer.querySelectorAll('.carousel-dot');
     
-    function goToSlide(index) {
+    // Initialize all videos
+    items.forEach(item => {
+        const video = item.querySelector('video');
+        if (video) {
+            // Add loadeddata event listener to each video
+            video.addEventListener('loadeddata', () => {
+                console.log('Video loaded:', video.src);
+            });
+            
+            // Add error event listener
+            video.addEventListener('error', (e) => {
+                console.error('Video error:', e);
+            });
+        }
+    });
+
+    async function goToSlide(index) {
+        if (isTransitioning || index === currentIndex) return;
+        isTransitioning = true;
+        
         console.log(`Going to slide ${index}`);
         
-        // Pause all videos
-        items.forEach(item => {
-            const video = item.querySelector('video');
-            if (video) {
-                video.pause();
-                console.log('Paused video in item', item);
+        try {
+            // Pause and reset current video
+            const currentVideo = items[currentIndex].querySelector('video');
+            if (currentVideo) {
+                currentVideo.pause();
+                currentVideo.currentTime = 0;
+                console.log('Paused current video:', currentIndex);
             }
-        });
-        
-        // Remove active class from all items and dots
-        items.forEach(item => item.classList.remove('active'));
-        dots.forEach(dot => dot.classList.remove('active'));
-        
-        // Add active class to current item and dot
-        items[index].classList.add('active');
-        dots[index].classList.add('active');
-        
-        // Play video if current slide is a video
-        const currentVideo = items[index].querySelector('video');
-        if (currentVideo) {
-            currentVideo.play().catch(error => {
-                console.error('Error playing video:', error);
-            });
-            console.log('Playing video in item', index);
+            
+            // Remove active class from current items
+            items[currentIndex].classList.remove('active');
+            dots[currentIndex].classList.remove('active');
+            
+            // Add active class to new items
+            items[index].classList.add('active');
+            dots[index].classList.add('active');
+            
+            // Play new video
+            const newVideo = items[index].querySelector('video');
+            if (newVideo) {
+                try {
+                    await newVideo.play();
+                    console.log('Playing new video:', index);
+                } catch (error) {
+                    console.error('Error playing video:', error);
+                    // Try playing again after a short delay
+                    setTimeout(async () => {
+                        try {
+                            await newVideo.play();
+                        } catch (e) {
+                            console.error('Retry play failed:', e);
+                        }
+                    }, 100);
+                }
+            }
+            
+            currentIndex = index;
+        } catch (error) {
+            console.error('Error in goToSlide:', error);
         }
         
-        currentIndex = index;
+        isTransitioning = false;
     }
     
     function nextSlide() {
@@ -144,23 +187,43 @@ document.addEventListener('DOMContentLoaded', function() {
         nextSlide();
     });
     
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') prevSlide();
-        if (e.key === 'ArrowRight') nextSlide();
-    });
+    // Keyboard navigation - attach to both window and carousel
+    const handleKeydown = (e) => {
+        console.log('Key pressed:', e.key);
+        // Only handle keys if carousel is focused or if it's a window event
+        if (document.activeElement === carousel || e.target === window) {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault(); // Prevent default scrolling
+                console.log('Left arrow pressed');
+                prevSlide();
+            }
+            if (e.key === 'ArrowRight') {
+                e.preventDefault(); // Prevent default scrolling
+                console.log('Right arrow pressed');
+                nextSlide();
+            }
+        }
+    };
+
+    // Add keyboard listeners to both carousel and window
+    carousel.addEventListener('keydown', handleKeydown);
+    window.addEventListener('keydown', handleKeydown);
     
     // Auto advance slides
     let autoplayInterval;
     
     function startAutoplay() {
         console.log('Starting autoplay');
-        autoplayInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+        stopAutoplay(); // Clear any existing interval
+        autoplayInterval = setInterval(nextSlide, 8000); // Change slide every 8 seconds
     }
     
     function stopAutoplay() {
-        console.log('Stopping autoplay');
-        clearInterval(autoplayInterval);
+        if (autoplayInterval) {
+            console.log('Stopping autoplay');
+            clearInterval(autoplayInterval);
+            autoplayInterval = null;
+        }
     }
     
     // Start autoplay
@@ -176,11 +239,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     carousel.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
+        stopAutoplay(); // Stop autoplay on touch
     });
     
     carousel.addEventListener('touchend', (e) => {
         touchEndX = e.changedTouches[0].screenX;
         handleSwipe();
+        startAutoplay(); // Resume autoplay after touch
     });
     
     function handleSwipe() {

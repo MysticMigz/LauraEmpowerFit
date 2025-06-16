@@ -295,6 +295,17 @@ nav ul li a:hover::after {
     overflow: hidden;
     border-radius: 20px;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    outline: none; /* Remove default focus outline */
+    transition: box-shadow 0.3s ease;
+}
+
+.carousel:focus {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2), 0 0 0 3px var(--accent-color);
+}
+
+.carousel:focus:not(:focus-visible) {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    outline: none;
 }
 
 .carousel-item {
