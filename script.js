@@ -386,6 +386,10 @@ if (contactForm) {
         submitButton.innerHTML = 'Sending...';
         submitButton.disabled = true;
 
+        // Hide any existing messages
+        document.getElementById('success-message').style.display = 'none';
+        document.getElementById('error-message').style.display = 'none';
+
         // Prepare template parameters
         const templateParams = {
             name: document.getElementById('name').value,
@@ -398,17 +402,29 @@ if (contactForm) {
 
         // Send email using EmailJS
         emailjs.send('service_jclpkug', 'template_vi7hku8', templateParams)
-            .then(function() {
-                // Show success message
-                document.getElementById('success-message').style.display = 'block';
-                document.getElementById('error-message').style.display = 'none';
-                // Reset form
-                contactForm.reset();
-            }, function(error) {
-                // Show error message
+            .then(function(response) {
+                // Check if the email was actually sent
+                if (response.status === 200) {
+                    // Show success message
+                    document.getElementById('success-message').style.display = 'block';
+                    // Reset form
+                    contactForm.reset();
+                } else {
+                    // Show error message if status is not 200
+                    document.getElementById('error-message').style.display = 'block';
+                    document.getElementById('error-message').textContent = 'Something went wrong. Please try again or contact me directly.';
+                    console.log('EmailJS response:', response);
+                }
+            })
+            .catch(function(error) {
+                // Show detailed error message
                 document.getElementById('error-message').style.display = 'block';
-                document.getElementById('success-message').style.display = 'none';
-                console.log('FAILED...', error);
+                if (error.text) {
+                    document.getElementById('error-message').textContent = `Error: ${error.text}`;
+                } else {
+                    document.getElementById('error-message').textContent = 'Failed to send message. Please try again or contact me directly.';
+                }
+                console.error('EmailJS error:', error);
             })
             .finally(function() {
                 // Reset button state
