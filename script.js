@@ -370,54 +370,51 @@ const animateOnScroll = () => {
 window.addEventListener('load', animateOnScroll);
 window.addEventListener('scroll', animateOnScroll);
 
-// Form Submission with enhanced animation
-const contactForm = document.querySelector('.contact-form');
+// Contact Form Submission with EmailJS
+const contactForm = document.getElementById('contactForm');
 
 if (contactForm) {
-    // Add focus animations to form fields
-    const formInputs = contactForm.querySelectorAll('input, textarea');
-    formInputs.forEach(input => {
-        input.addEventListener('focus', () => {
-            input.parentElement.classList.add('focused');
-        });
+    // Initialize EmailJS
+    emailjs.init("V1adpilxPoKiDsC3z");
+
+    contactForm.addEventListener('submit', function(event) {
+        event.preventDefault();
         
-        input.addEventListener('blur', () => {
-            if (input.value === '') {
-                input.parentElement.classList.remove('focused');
-            }
-        });
-    });
-    
-    contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        // Get form data
-        const formData = new FormData(contactForm);
-        const name = formData.get('name');
-        const email = formData.get('email');
-        const message = formData.get('message');
-        
-        // You would typically send this data to a server
-        // For demo purposes, we'll just log it and show a success message
-        console.log('Form submitted:', { name, email, message });
-        
-        // Animate form submission
-        const formElements = contactForm.querySelectorAll('.form-group, button');
-        formElements.forEach((element, index) => {
-            element.style.animation = `fadeOutUp 0.5s forwards ${index * 0.1}s`;
-        });
-        
-        // Show success message after form elements fade out
-        setTimeout(() => {
-            contactForm.innerHTML = '';
-            
-            const successMessage = document.createElement('div');
-            successMessage.classList.add('success-message');
-            successMessage.innerHTML = '<i class="fas fa-check-circle"></i> Thank you for reaching out! I\'ll get back to you within 24 hours to discuss your fitness journey.';
-            
-            contactForm.appendChild(successMessage);
-            successMessage.style.animation = 'fadeInUp 0.8s forwards';
-        }, 800);
+        // Show loading state
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.innerHTML = 'Sending...';
+        submitButton.disabled = true;
+
+        // Prepare template parameters
+        const templateParams = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            goal: document.getElementById('goal').value,
+            message: document.getElementById('message').value,
+            additional: document.getElementById('additional').value
+        };
+
+        // Send email using EmailJS
+        emailjs.send('service_jclpkug', 'template_vi7hku8', templateParams)
+            .then(function() {
+                // Show success message
+                document.getElementById('success-message').style.display = 'block';
+                document.getElementById('error-message').style.display = 'none';
+                // Reset form
+                contactForm.reset();
+            }, function(error) {
+                // Show error message
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('success-message').style.display = 'none';
+                console.log('FAILED...', error);
+            })
+            .finally(function() {
+                // Reset button state
+                submitButton.innerHTML = originalButtonText;
+                submitButton.disabled = false;
+            });
     });
 }
 
