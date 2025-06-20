@@ -100,29 +100,53 @@ document.addEventListener('DOMContentLoaded', function() {
                 video.muted = true;
                 video.setAttribute('muted', '');
                 
-                // Remove controls on mobile
+                // Mobile optimizations
                 if (window.innerWidth <= 768) {
                     video.removeAttribute('controls');
+                    video.setAttribute('playsinline', '');
+                    video.setAttribute('webkit-playsinline', '');
+                    
+                    // Set lower quality for mobile
+                    if (video.videoHeight > 720) {
+                        video.style.objectFit = 'contain';
+                    }
                 }
                 
                 // Optimize video loading
-                video.setAttribute('playsinline', '');
                 video.setAttribute('preload', 'metadata');
                 
-                // Handle video loading
+                // Prevent memory leaks
                 video.addEventListener('loadedmetadata', () => {
-                    console.log(`Video ${index + 1} metadata loaded`);
+                    if (!item.classList.contains('active')) {
+                        video.pause();
+                        video.currentTime = 0;
+                    }
                 });
                 
+                // Handle video loading and errors
                 video.addEventListener('canplay', () => {
-                    console.log(`Video ${index + 1} can play`);
                     if (index === currentIndex) {
-                        video.play().catch(e => console.log('Initial play prevented:', e));
+                        video.play().catch(e => {
+                            console.log('Autoplay prevented:', e);
+                            // Add play button for mobile if autoplay fails
+                            if (window.innerWidth <= 768) {
+                                const playButton = document.createElement('button');
+                                playButton.className = 'video-play-btn';
+                                playButton.innerHTML = '▶';
+                                item.appendChild(playButton);
+                                
+                                playButton.addEventListener('click', () => {
+                                    video.play();
+                                    playButton.style.display = 'none';
+                                });
+                            }
+                        });
                     }
                 });
                 
                 video.addEventListener('error', (e) => {
                     console.error(`Video ${index + 1} error:`, e);
+                    item.innerHTML = '<div class="video-error">Video unavailable</div>';
                 });
             }
         });
