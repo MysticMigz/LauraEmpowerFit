@@ -14,8 +14,6 @@
     <!-- Add EmailJS Scripts at the start of body -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-        console.log('Starting EmailJS initialization...');
-        
         window.addEventListener('load', function() {
             try {
                 const PUBLIC_KEY = '__EMAILJS_PUBLIC_KEY__';
@@ -30,8 +28,6 @@
                     serviceId: SERVICE_ID,
                     templateId: TEMPLATE_ID
                 };
-
-                console.log('EmailJS initialized successfully');
             } catch (error) {
                 console.error('Failed to initialize EmailJS');
                 // Show error on page
