@@ -395,9 +395,11 @@ window.addEventListener('load', animateOnScroll);
 window.addEventListener('scroll', animateOnScroll);
 
 // Contact Form Submission with EmailJS
+console.log('Contact form script loaded');
 const contactForm = document.getElementById('contactForm');
 
 if (contactForm) {
+    console.log('Contact form found in DOM');
     contactForm.addEventListener('submit', function(event) {
         event.preventDefault();
         

@@ -313,7 +313,10 @@
     <!-- Add EmailJS Scripts before closing body tag -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-        (function() {
+        console.log('Starting EmailJS initialization...');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, configuring EmailJS...');
             try {
                 const PUBLIC_KEY = '__EMAILJS_PUBLIC_KEY__';
                 const SERVICE_ID = '__EMAILJS_SERVICE_ID__';
@@ -339,7 +342,7 @@
             } catch (error) {
                 console.error('Failed to initialize EmailJS:', error);
             }
-        })();
+        });
     </script>
 
     <script src="script.js"></script>
