@@ -24,6 +24,33 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
+      - name: Validate EmailJS Keys
+        shell: bash
+        env:
+          PUBLIC_KEY: ${{ secrets.EMAILJS_PUBLIC_KEY }}
+          SERVICE_ID: ${{ secrets.EMAILJS_SERVICE_ID }}
+          TEMPLATE_ID: ${{ secrets.EMAILJS_TEMPLATE_ID }}
+        run: |
+          echo "Validating EmailJS configuration..."
+          
+          # Check if keys exist
+          if [ -z "$PUBLIC_KEY" ]; then
+            echo "Error: EMAILJS_PUBLIC_KEY is not set"
+            exit 1
+          fi
+          
+          if [ -z "$SERVICE_ID" ]; then
+            echo "Error: EMAILJS_SERVICE_ID is not set"
+            exit 1
+          fi
+          
+          if [ -z "$TEMPLATE_ID" ]; then
+            echo "Error: EMAILJS_TEMPLATE_ID is not set"
+            exit 1
+          fi
+          
+          echo "EmailJS configuration validation passed"
+
       - name: Configure EmailJS
         shell: bash
         env:
