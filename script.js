@@ -409,6 +409,17 @@ if (contactForm) {
         submitButton.textContent = 'Sending...';
         submitButton.disabled = true;
 
+        // Create status indicator
+        const statusIndicator = document.createElement('div');
+        statusIndicator.style.position = 'fixed';
+        statusIndicator.style.bottom = '10px';
+        statusIndicator.style.right = '10px';
+        statusIndicator.style.padding = '10px';
+        statusIndicator.style.color = 'white';
+        statusIndicator.style.borderRadius = '5px';
+        statusIndicator.style.zIndex = '9999';
+        document.body.appendChild(statusIndicator);
+
         // Hide any previous messages
         document.getElementById('success-message').style.display = 'none';
         document.getElementById('error-message').style.display = 'none';
@@ -421,11 +432,8 @@ if (contactForm) {
 
             const { SERVICE_ID, TEMPLATE_ID, USER_ID } = window.EMAILJS_CONFIG;
             
-            console.log('Attempting to send form with config:', {
-                serviceId: SERVICE_ID,
-                templateId: TEMPLATE_ID,
-                formData: Object.fromEntries(new FormData(event.target))
-            });
+            statusIndicator.style.background = '#2196F3';
+            statusIndicator.textContent = 'Sending form...';
 
             if (!SERVICE_ID || !TEMPLATE_ID || !USER_ID) {
                 throw new Error('EmailJS configuration is incomplete');
@@ -443,6 +451,8 @@ if (contactForm) {
                     console.log('Form submitted successfully');
                     document.getElementById('success-message').style.display = 'block';
                     document.getElementById('contactForm').reset();
+                    statusIndicator.style.background = '#4CAF50';
+                    statusIndicator.textContent = 'Message sent successfully!';
                 } else {
                     throw new Error(`Unexpected response status: ${response.status}`);
                 }
@@ -450,28 +460,22 @@ if (contactForm) {
                 console.error('EmailJS Error:', error);
                 document.getElementById('error-message').textContent = 'Sorry, something went wrong. Please try again or email me directly at laura.empowerfit@gmail.com';
                 document.getElementById('error-message').style.display = 'block';
+                statusIndicator.style.background = '#f44336';
+                statusIndicator.textContent = 'Failed to send message';
             });
         } catch (error) {
             console.error('Configuration Error:', error);
             document.getElementById('error-message').textContent = 'Sorry, the contact form is not properly configured. Please email me directly at laura.empowerfit@gmail.com';
             document.getElementById('error-message').style.display = 'block';
+            statusIndicator.style.background = '#f44336';
+            statusIndicator.textContent = 'Configuration Error: ' + error.message;
         } finally {
             // Reset button state
             submitButton.textContent = originalButtonText;
             submitButton.disabled = false;
-        }
-
-        // Log configuration status on page load
-        try {
-            const { SERVICE_ID, TEMPLATE_ID, USER_ID } = window.EMAILJS_CONFIG || {};
-            console.log('EmailJS Config Status:', {
-                configExists: !!window.EMAILJS_CONFIG,
-                serviceId: SERVICE_ID,
-                templateId: TEMPLATE_ID,
-                userId: USER_ID
-            });
-        } catch (error) {
-            console.error('Failed to log EmailJS configuration:', error);
+            
+            // Remove status indicator after 5 seconds
+            setTimeout(() => statusIndicator.remove(), 5000);
         }
     });
 }
