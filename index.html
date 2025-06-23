@@ -19,19 +19,19 @@
         window.addEventListener('load', function() {
             console.log('Window loaded, configuring EmailJS...');
             try {
-                if (typeof emailjs === 'undefined') {
-                    throw new Error('EmailJS failed to load');
-                }
-
                 const PUBLIC_KEY = '__EMAILJS_PUBLIC_KEY__';
-                
-                // Initialize EmailJS with just the public key
-                emailjs.init(PUBLIC_KEY);
-                
-                // Store configuration globally with correct property names
+                const SERVICE_ID = '__EMAILJS_SERVICE_ID__';
+                const TEMPLATE_ID = '__EMAILJS_TEMPLATE_ID__';
+
+                // Initialize EmailJS
+                emailjs.init({
+                    publicKey: PUBLIC_KEY,
+                });
+
+                // Store configuration globally
                 window.EMAILJS_CONFIG = {
-                    serviceId: '__EMAILJS_SERVICE_ID__',
-                    templateId: '__EMAILJS_TEMPLATE_ID__'
+                    serviceId: SERVICE_ID,
+                    templateId: TEMPLATE_ID
                 };
 
                 console.log('EmailJS initialized successfully');
