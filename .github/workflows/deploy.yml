@@ -22,12 +22,43 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Configure EmailJS
+      - name: Debug Secrets Availability
         run: |
+          if [ -n "${{ secrets.EMAILJS_PUBLIC_KEY }}" ]; then
+            echo "EMAILJS_PUBLIC_KEY is set"
+          else
+            echo "EMAILJS_PUBLIC_KEY is missing"
+          fi
+          if [ -n "${{ secrets.EMAILJS_SERVICE_ID }}" ]; then
+            echo "EMAILJS_SERVICE_ID is set"
+          else
+            echo "EMAILJS_SERVICE_ID is missing"
+          fi
+          if [ -n "${{ secrets.EMAILJS_TEMPLATE_ID }}" ]; then
+            echo "EMAILJS_TEMPLATE_ID is set"
+          else
+            echo "EMAILJS_TEMPLATE_ID is missing"
+          fi
+
+      - name: Configure EmailJS
+        env:
+          EMAILJS_PUBLIC_KEY: ${{ secrets.EMAILJS_PUBLIC_KEY }}
+          EMAILJS_SERVICE_ID: ${{ secrets.EMAILJS_SERVICE_ID }}
+          EMAILJS_TEMPLATE_ID: ${{ secrets.EMAILJS_TEMPLATE_ID }}
+        run: |
+          # Show debug information (length of values)
+          echo "Public Key length: ${#EMAILJS_PUBLIC_KEY}"
+          echo "Service ID length: ${#EMAILJS_SERVICE_ID}"
+          echo "Template ID length: ${#EMAILJS_TEMPLATE_ID}"
+          
           # Replace all EmailJS configuration placeholders
-          sed -i "s/__EMAILJS_PUBLIC_KEY__/${{ secrets.EMAILJS_PUBLIC_KEY }}/g" index.html
-          sed -i "s/__EMAILJS_SERVICE_ID__/${{ secrets.EMAILJS_SERVICE_ID }}/g" index.html
-          sed -i "s/__EMAILJS_TEMPLATE_ID__/${{ secrets.EMAILJS_TEMPLATE_ID }}/g" index.html
+          sed -i "s/__EMAILJS_PUBLIC_KEY__/$EMAILJS_PUBLIC_KEY/g" index.html
+          sed -i "s/__EMAILJS_SERVICE_ID__/$EMAILJS_SERVICE_ID/g" index.html
+          sed -i "s/__EMAILJS_TEMPLATE_ID__/$EMAILJS_TEMPLATE_ID/g" index.html
+          
+          # Verify the replacements
+          echo "Checking if placeholders were replaced:"
+          grep -l "__EMAILJS" index.html || echo "All placeholders replaced successfully"
 
       - name: Setup Pages
         uses: actions/configure-pages@v3

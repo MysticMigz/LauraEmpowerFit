@@ -221,20 +221,20 @@
                 </div>
                 <form id="contactForm" class="contact-form">
                     <div class="form-group">
-                        <label for="name">Your Name*</label>
-                        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                        <label for="from_name">Your Name*</label>
+                        <input type="text" id="from_name" name="from_name" placeholder="Enter your full name" required>
                     </div>
                     <div class="form-group">
-                        <label for="email">Email Address*</label>
-                        <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                        <label for="reply_to">Email Address*</label>
+                        <input type="email" id="reply_to" name="reply_to" placeholder="Enter your email address" required>
                     </div>
                     <div class="form-group">
-                        <label for="phone">Phone Number*</label>
-                        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                        <label for="phone_number">Phone Number*</label>
+                        <input type="tel" id="phone_number" name="phone_number" placeholder="Enter your phone number" required>
                     </div>
                     <div class="form-group">
-                        <label for="goal">What is your Goal?*</label>
-                        <select id="goal" name="goal" required>
+                        <label for="goal_type">What is your Goal?*</label>
+                        <select id="goal_type" name="goal_type" required>
                             <option value="" disabled selected>Select your primary goal</option>
                             <option value="weight-loss">Weight Loss</option>
                             <option value="muscle-gain">Muscle Gain</option>
@@ -250,8 +250,8 @@
                         <textarea id="message" name="message" rows="5" placeholder="Share your fitness goals, current challenges, or any specific questions you have. The more details you provide, the better I can understand how to help you achieve your goals."></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="additional">Anything else you'd like to add?</label>
-                        <textarea id="additional" name="additional" rows="3" placeholder="Any additional information, preferences, or concerns you'd like to share"></textarea>
+                        <label for="additional_info">Anything else you'd like to add?</label>
+                        <textarea id="additional_info" name="additional_info" rows="3" placeholder="Any additional information, preferences, or concerns you'd like to share"></textarea>
                     </div>
                     <button type="submit" class="btn">Send Enquiry</button>
                     <p class="form-notice">* Required fields</p>
@@ -305,11 +305,20 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            emailjs.init('__EMAILJS_PUBLIC_KEY__');
-            window.EMAILJS_CONFIG = {
-                SERVICE_ID: '__EMAILJS_SERVICE_ID__',
-                TEMPLATE_ID: '__EMAILJS_TEMPLATE_ID__'
-            };
+            try {
+                // Initialize EmailJS with your public key
+                emailjs.init('__EMAILJS_PUBLIC_KEY__');
+                
+                // Store configuration globally
+                window.EMAILJS_CONFIG = {
+                    SERVICE_ID: '__EMAILJS_SERVICE_ID__',
+                    TEMPLATE_ID: '__EMAILJS_TEMPLATE_ID__',
+                    USER_ID: '__EMAILJS_PUBLIC_KEY__'  // Also store user_id for complete configuration
+                };
+                console.log('EmailJS initialized with configuration');
+            } catch (error) {
+                console.error('Failed to initialize EmailJS:', error);
+            }
         })();
     </script>
 
