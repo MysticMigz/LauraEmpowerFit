@@ -411,16 +411,27 @@ if (contactForm) {
         document.getElementById('success-message').style.display = 'none';
         document.getElementById('error-message').style.display = 'none';
 
-        // Verify EmailJS configuration
+        // Verify EmailJS configuration and initialization
         try {
+            // Check if EmailJS is loaded
+            if (typeof emailjs === 'undefined') {
+                throw new Error('EmailJS is not loaded');
+            }
+
+            // Check if configuration exists
             if (!window.EMAILJS_CONFIG) {
                 throw new Error('EmailJS configuration is missing');
             }
 
             const { serviceId, templateId } = window.EMAILJS_CONFIG;
             
-            if (!serviceId || !templateId) {
-                throw new Error('EmailJS configuration is incomplete');
+            // Verify configuration values
+            if (!serviceId || serviceId === '__EMAILJS_SERVICE_ID__') {
+                throw new Error('EmailJS Service ID is not configured');
+            }
+            
+            if (!templateId || templateId === '__EMAILJS_TEMPLATE_ID__') {
+                throw new Error('EmailJS Template ID is not configured');
             }
 
             // Send email using EmailJS
@@ -436,12 +447,10 @@ if (contactForm) {
                     throw new Error(`Unexpected response status: ${response.status}`);
                 }
             }).catch(function(error) {
-                console.error('Form submission failed');
                 document.getElementById('error-message').textContent = 'Sorry, something went wrong. Please try again or email me directly at laura.empowerfit@gmail.com';
                 document.getElementById('error-message').style.display = 'block';
             });
         } catch (error) {
-            console.error('Form submission error');
             document.getElementById('error-message').textContent = 'Sorry, the contact form is not properly configured. Please email me directly at laura.empowerfit@gmail.com';
             document.getElementById('error-message').style.display = 'block';
         } finally {
@@ -450,15 +459,6 @@ if (contactForm) {
             submitButton.disabled = false;
         }
     });
-
-    // Remove configuration logging
-    try {
-        if (!window.EMAILJS_CONFIG) {
-            console.error('EmailJS not configured');
-        }
-    } catch (error) {
-        console.error('Failed to verify EmailJS configuration');
-    }
 }
 
 // Newsletter Form Submission

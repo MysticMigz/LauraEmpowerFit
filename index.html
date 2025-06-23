@@ -308,7 +308,12 @@
             try {
                 const PUBLIC_KEY = '__EMAILJS_PUBLIC_KEY__';
                 
-                // Initialize EmailJS with the correct format
+                // Verify the public key is properly replaced
+                if (PUBLIC_KEY === '__EMAILJS_PUBLIC_KEY__') {
+                    throw new Error('EmailJS Public Key not configured');
+                }
+
+                // Initialize EmailJS
                 emailjs.init(PUBLIC_KEY);
                 
                 // Store configuration globally
@@ -317,7 +322,8 @@
                     templateId: '__EMAILJS_TEMPLATE_ID__'
                 };
             } catch (error) {
-                console.error('Failed to initialize EmailJS');
+                // Silently fail initialization but mark as not configured
+                window.EMAILJS_CONFIG = null;
             }
         })();
     </script>
