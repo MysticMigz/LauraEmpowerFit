@@ -419,18 +419,15 @@ if (contactForm) {
         document.getElementById('success-message').style.display = 'none';
         document.getElementById('error-message').style.display = 'none';
 
-        // Get form data
-        const formData = {
-            from_name: document.getElementById('name').value,
-            reply_to: document.getElementById('email').value,
-            phone_number: document.getElementById('phone').value,
-            goal_type: document.getElementById('goal').value,
-            message: document.getElementById('message').value,
-            additional_info: document.getElementById('additional').value || ''
-        };
-
         // Log the form data being sent
-        console.log('Preparing to send form data:', formData);
+        console.log('Preparing to send form data:', {
+            from_name: document.getElementById('from_name')?.value,
+            reply_to: document.getElementById('reply_to')?.value,
+            phone_number: document.getElementById('phone_number')?.value,
+            goal_type: document.getElementById('goal_type')?.value,
+            message: document.getElementById('message')?.value,
+            additional_info: document.getElementById('additional_info')?.value
+        });
 
         // Verify EmailJS configuration
         if (!window.EMAILJS_CONFIG || !window.EMAILJS_CONFIG.SERVICE_ID || !window.EMAILJS_CONFIG.TEMPLATE_ID) {
