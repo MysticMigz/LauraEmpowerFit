@@ -17,17 +17,10 @@
         console.log('Starting EmailJS initialization...');
         
         window.addEventListener('load', function() {
-            console.log('Window loaded, configuring EmailJS...');
             try {
                 const PUBLIC_KEY = '__EMAILJS_PUBLIC_KEY__';
                 const SERVICE_ID = '__EMAILJS_SERVICE_ID__';
                 const TEMPLATE_ID = '__EMAILJS_TEMPLATE_ID__';
-
-                console.log('EmailJS configuration values:', {
-                    publicKey: PUBLIC_KEY,
-                    serviceId: SERVICE_ID,
-                    templateId: TEMPLATE_ID
-                });
 
                 // Initialize EmailJS
                 emailjs.init(PUBLIC_KEY);
@@ -39,9 +32,8 @@
                 };
 
                 console.log('EmailJS initialized successfully');
-                console.log('Final configuration:', window.EMAILJS_CONFIG);
             } catch (error) {
-                console.error('Failed to initialize EmailJS:', error.message);
+                console.error('Failed to initialize EmailJS');
                 // Show error on page
                 const errorDiv = document.createElement('div');
                 errorDiv.style.position = 'fixed';
@@ -52,7 +44,7 @@
                 errorDiv.style.padding = '10px';
                 errorDiv.style.borderRadius = '5px';
                 errorDiv.style.zIndex = '9999';
-                errorDiv.textContent = 'EmailJS Error: ' + error.message;
+                errorDiv.textContent = 'EmailJS Error: Configuration failed';
                 document.body.appendChild(errorDiv);
             }
         });
