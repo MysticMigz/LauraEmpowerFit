@@ -399,23 +399,19 @@ const contactForm = document.getElementById('contactForm');
 
 if (contactForm) {
     // Initialize EmailJS
-    emailjs.init("V1adpilxPoKiDsC3z");
+    // EmailJS initialization is handled in index.html
 
     contactForm.addEventListener('submit', function(event) {
         event.preventDefault();
         
         // Show loading state
         const submitButton = this.querySelector('button[type="submit"]');
-        const originalButtonText = submitButton.innerHTML;
-        submitButton.innerHTML = 'Sending...';
+        const originalButtonText = submitButton.textContent;
+        submitButton.textContent = 'Sending...';
         submitButton.disabled = true;
 
-        // Hide any existing messages
-        document.getElementById('success-message').style.display = 'none';
-        document.getElementById('error-message').style.display = 'none';
-
-        // Prepare template parameters
-        const templateParams = {
+        // Get form data
+        const formData = {
             name: document.getElementById('name').value,
             email: document.getElementById('email').value,
             phone: document.getElementById('phone').value,
@@ -425,36 +421,24 @@ if (contactForm) {
         };
 
         // Send email using EmailJS
-        emailjs.send('service_jclpkug', 'template_vi7hku8', templateParams)
-            .then(function(response) {
-                // Check if the email was actually sent
-                if (response.status === 200) {
-                    // Show success message
-                    document.getElementById('success-message').style.display = 'block';
-                    // Reset form
-                    contactForm.reset();
-                } else {
-                    // Show error message if status is not 200
-                    document.getElementById('error-message').style.display = 'block';
-                    document.getElementById('error-message').textContent = 'Something went wrong. Please try again or contact me directly.';
-                    console.log('EmailJS response:', response);
-                }
-            })
-            .catch(function(error) {
-                // Show detailed error message
-                document.getElementById('error-message').style.display = 'block';
-                if (error.text) {
-                    document.getElementById('error-message').textContent = `Error: ${error.text}`;
-                } else {
-                    document.getElementById('error-message').textContent = 'Failed to send message. Please try again or contact me directly.';
-                }
-                console.error('EmailJS error:', error);
-            })
-            .finally(function() {
-                // Reset button state
-                submitButton.innerHTML = originalButtonText;
-                submitButton.disabled = false;
-            });
+        emailjs.send(
+            EMAILJS_CONFIG.SERVICE_ID,
+            EMAILJS_CONFIG.TEMPLATE_ID,
+            formData
+        ).then(function(response) {
+            console.log('SUCCESS!', response.status, response.text);
+            document.getElementById('success-message').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('contactForm').reset();
+        }).catch(function(error) {
+            console.log('FAILED...', error);
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+        }).finally(function() {
+            // Reset button state
+            submitButton.textContent = originalButtonText;
+            submitButton.disabled = false;
+        });
     });
 }
 
