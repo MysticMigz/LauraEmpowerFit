@@ -411,26 +411,35 @@ if (contactForm) {
         document.getElementById('success-message').style.display = 'none';
         document.getElementById('error-message').style.display = 'none';
 
-        // Verify EmailJS configuration
+        // Verify EmailJS configuration and initialization
         try {
+            // Check if EmailJS is loaded
+            if (typeof emailjs === 'undefined') {
+                throw new Error('EmailJS is not loaded');
+            }
+
+            // Check if configuration exists
             if (!window.EMAILJS_CONFIG) {
                 throw new Error('EmailJS configuration is missing');
             }
 
-            const { SERVICE_ID, TEMPLATE_ID, USER_ID } = window.EMAILJS_CONFIG;
+            const { serviceId, templateId } = window.EMAILJS_CONFIG;
             
-            if (!SERVICE_ID || !TEMPLATE_ID || !USER_ID) {
-                throw new Error('EmailJS configuration is incomplete');
+            // Verify configuration values
+            if (!serviceId || serviceId === '__EMAILJS_SERVICE_ID__') {
+                throw new Error('EmailJS Service ID is not configured');
+            }
+            
+            if (!templateId || templateId === '__EMAILJS_TEMPLATE_ID__') {
+                throw new Error('EmailJS Template ID is not configured');
             }
 
             // Send email using EmailJS
             emailjs.sendForm(
-                SERVICE_ID,
-                TEMPLATE_ID,
-                event.target,
-                USER_ID
+                serviceId,
+                templateId,
+                event.target
             ).then(function(response) {
-                console.log('EmailJS Response:', response);
                 if (response.status === 200) {
                     document.getElementById('success-message').style.display = 'block';
                     document.getElementById('contactForm').reset();
@@ -438,12 +447,10 @@ if (contactForm) {
                     throw new Error(`Unexpected response status: ${response.status}`);
                 }
             }).catch(function(error) {
-                console.error('EmailJS Error:', error);
                 document.getElementById('error-message').textContent = 'Sorry, something went wrong. Please try again or email me directly at laura.empowerfit@gmail.com';
                 document.getElementById('error-message').style.display = 'block';
             });
         } catch (error) {
-            console.error('Configuration Error:', error);
             document.getElementById('error-message').textContent = 'Sorry, the contact form is not properly configured. Please email me directly at laura.empowerfit@gmail.com';
             document.getElementById('error-message').style.display = 'block';
         } finally {
@@ -452,19 +459,6 @@ if (contactForm) {
             submitButton.disabled = false;
         }
     });
-
-    // Log configuration status on page load
-    try {
-        const { SERVICE_ID, TEMPLATE_ID, USER_ID } = window.EMAILJS_CONFIG || {};
-        console.log('EmailJS Config Status:', {
-            configExists: !!window.EMAILJS_CONFIG,
-            serviceId: SERVICE_ID,
-            templateId: TEMPLATE_ID,
-            userId: USER_ID
-        });
-    } catch (error) {
-        console.error('Failed to log EmailJS configuration:', error);
-    }
 }
 
 // Newsletter Form Submission

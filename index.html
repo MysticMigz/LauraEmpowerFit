@@ -316,28 +316,23 @@
         (function() {
             try {
                 const PUBLIC_KEY = '__EMAILJS_PUBLIC_KEY__';
-                const SERVICE_ID = '__EMAILJS_SERVICE_ID__';
-                const TEMPLATE_ID = '__EMAILJS_TEMPLATE_ID__';
-
-                console.log('Initializing EmailJS with:', {
-                    publicKey: PUBLIC_KEY,
-                    serviceId: SERVICE_ID,
-                    templateId: TEMPLATE_ID
-                });
+                
+                // Verify the public key is properly replaced
+                if (PUBLIC_KEY === '__EMAILJS_PUBLIC_KEY__') {
+                    throw new Error('EmailJS Public Key not configured');
+                }
 
                 // Initialize EmailJS
-                emailjs.init(PUBLIC_KEY, { publicKey: PUBLIC_KEY });
+                emailjs.init(PUBLIC_KEY);
                 
                 // Store configuration globally
                 window.EMAILJS_CONFIG = {
-                    SERVICE_ID: SERVICE_ID,
-                    TEMPLATE_ID: TEMPLATE_ID,
-                    USER_ID: PUBLIC_KEY
+                    serviceId: '__EMAILJS_SERVICE_ID__',
+                    templateId: '__EMAILJS_TEMPLATE_ID__'
                 };
-
-                console.log('EmailJS initialized successfully');
             } catch (error) {
-                console.error('Failed to initialize EmailJS:', error);
+                // Silently fail initialization but mark as not configured
+                window.EMAILJS_CONFIG = null;
             }
         })();
     </script>
