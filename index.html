@@ -23,6 +23,12 @@
                 const SERVICE_ID = '__EMAILJS_SERVICE_ID__';
                 const TEMPLATE_ID = '__EMAILJS_TEMPLATE_ID__';
 
+                console.log('EmailJS configuration values:', {
+                    publicKey: PUBLIC_KEY,
+                    serviceId: SERVICE_ID,
+                    templateId: TEMPLATE_ID
+                });
+
                 // Initialize EmailJS
                 emailjs.init({
                     publicKey: PUBLIC_KEY,
@@ -35,6 +41,7 @@
                 };
 
                 console.log('EmailJS initialized successfully');
+                console.log('Final configuration:', window.EMAILJS_CONFIG);
                 
                 // Add visual indicator
                 const indicator = document.createElement('div');
