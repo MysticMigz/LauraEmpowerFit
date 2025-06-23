@@ -398,9 +398,6 @@ window.addEventListener('scroll', animateOnScroll);
 const contactForm = document.getElementById('contactForm');
 
 if (contactForm) {
-    // Initialize EmailJS
-    // EmailJS initialization is handled in index.html
-
     contactForm.addEventListener('submit', function(event) {
         event.preventDefault();
         
@@ -410,6 +407,10 @@ if (contactForm) {
         submitButton.textContent = 'Sending...';
         submitButton.disabled = true;
 
+        // Hide any previous messages
+        document.getElementById('success-message').style.display = 'none';
+        document.getElementById('error-message').style.display = 'none';
+
         // Get form data
         const formData = {
             name: document.getElementById('name').value,
@@ -417,23 +418,36 @@ if (contactForm) {
             phone: document.getElementById('phone').value,
             goal: document.getElementById('goal').value,
             message: document.getElementById('message').value,
-            additional: document.getElementById('additional').value
+            additional: document.getElementById('additional').value || ''
         };
+
+        // Verify EmailJS configuration
+        if (!window.EMAILJS_CONFIG || !window.EMAILJS_CONFIG.SERVICE_ID || !window.EMAILJS_CONFIG.TEMPLATE_ID) {
+            console.error('EmailJS configuration missing or incomplete');
+            document.getElementById('error-message').textContent = 'Sorry, the contact form is not properly configured. Please email me directly at laura.empowerfit@gmail.com';
+            document.getElementById('error-message').style.display = 'block';
+            submitButton.textContent = originalButtonText;
+            submitButton.disabled = false;
+            return;
+        }
 
         // Send email using EmailJS
         emailjs.send(
-            EMAILJS_CONFIG.SERVICE_ID,
-            EMAILJS_CONFIG.TEMPLATE_ID,
+            window.EMAILJS_CONFIG.SERVICE_ID,
+            window.EMAILJS_CONFIG.TEMPLATE_ID,
             formData
         ).then(function(response) {
-            console.log('SUCCESS!', response.status, response.text);
-            document.getElementById('success-message').style.display = 'block';
-            document.getElementById('error-message').style.display = 'none';
-            document.getElementById('contactForm').reset();
+            if (response.status === 200) {
+                console.log('SUCCESS!', response.status, response.text);
+                document.getElementById('success-message').style.display = 'block';
+                document.getElementById('contactForm').reset();
+            } else {
+                throw new Error('Unexpected response status: ' + response.status);
+            }
         }).catch(function(error) {
-            console.log('FAILED...', error);
+            console.error('Failed to send message:', error);
+            document.getElementById('error-message').textContent = 'Sorry, something went wrong. Please try again or email me directly at laura.empowerfit@gmail.com';
             document.getElementById('error-message').style.display = 'block';
-            document.getElementById('success-message').style.display = 'none';
         }).finally(function() {
             // Reset button state
             submitButton.textContent = originalButtonText;

@@ -305,8 +305,11 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            // These values will be replaced during the build process
             emailjs.init('__EMAILJS_PUBLIC_KEY__');
+            window.EMAILJS_CONFIG = {
+                SERVICE_ID: '__EMAILJS_SERVICE_ID__',
+                TEMPLATE_ID: '__EMAILJS_TEMPLATE_ID__'
+            };
         })();
     </script>
 

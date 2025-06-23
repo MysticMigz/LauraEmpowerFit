@@ -22,16 +22,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Configure Environment
+      - name: Configure EmailJS
         run: |
-          # Replace placeholder values with actual secrets
+          # Replace all EmailJS configuration placeholders
           sed -i "s/__EMAILJS_PUBLIC_KEY__/${{ secrets.EMAILJS_PUBLIC_KEY }}/g" index.html
-          
-          # Create the config file with EmailJS settings
-          echo "const EMAILJS_CONFIG = {
-            SERVICE_ID: '${{ secrets.EMAILJS_SERVICE_ID }}',
-            TEMPLATE_ID: '${{ secrets.EMAILJS_TEMPLATE_ID }}'
-          };" > emailjs-config.js
+          sed -i "s/__EMAILJS_SERVICE_ID__/${{ secrets.EMAILJS_SERVICE_ID }}/g" index.html
+          sed -i "s/__EMAILJS_TEMPLATE_ID__/${{ secrets.EMAILJS_TEMPLATE_ID }}/g" index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
