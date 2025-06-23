@@ -430,21 +430,20 @@ if (contactForm) {
                 throw new Error('EmailJS configuration is missing');
             }
 
-            const { SERVICE_ID, TEMPLATE_ID, USER_ID } = window.EMAILJS_CONFIG;
+            const { serviceId, templateId } = window.EMAILJS_CONFIG;
             
             statusIndicator.style.background = '#2196F3';
             statusIndicator.textContent = 'Sending form...';
 
-            if (!SERVICE_ID || !TEMPLATE_ID || !USER_ID) {
+            if (!serviceId || !templateId) {
                 throw new Error('EmailJS configuration is incomplete');
             }
 
-            // Send email using EmailJS
+            // Send email using EmailJS with correct parameter names
             emailjs.sendForm(
-                SERVICE_ID,
-                TEMPLATE_ID,
-                event.target,
-                USER_ID
+                serviceId,
+                templateId,
+                event.target
             ).then(function(response) {
                 console.log('EmailJS Response:', response);
                 if (response.status === 200) {
