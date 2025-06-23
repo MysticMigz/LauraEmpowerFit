@@ -306,16 +306,21 @@
     <script type="text/javascript">
         (function() {
             try {
-                // Initialize EmailJS with your public key
-                emailjs.init('zGuW8oOpLAoGMe3bd');
+                const PUBLIC_KEY = 'zGuW8oOpLAoGMe3bd';
+                const SERVICE_ID = 'service_5vmrvqt';
+                const TEMPLATE_ID = 'template_lxkw3om';
+
+                // Initialize EmailJS
+                emailjs.init(PUBLIC_KEY);
                 
                 // Store configuration globally
                 window.EMAILJS_CONFIG = {
-                    SERVICE_ID: 'service_5vmrvqt',
-                    TEMPLATE_ID: 'template_lxkw3om',
-                    USER_ID: 'zGuW8oOpLAoGMe3bd'  // Also store user_id for complete configuration
+                    SERVICE_ID: SERVICE_ID,
+                    TEMPLATE_ID: TEMPLATE_ID,
+                    USER_ID: PUBLIC_KEY
                 };
-                console.log('EmailJS initialized with configuration');
+
+                console.log('EmailJS initialized successfully');
             } catch (error) {
                 console.error('Failed to initialize EmailJS:', error);
             }
