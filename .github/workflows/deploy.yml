@@ -3,69 +3,69 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # or your default branch
+      - main
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Configure EmailJS
+        shell: bash
+        env:
+          PUBLIC_KEY: ${{ secrets.EMAILJS_PUBLIC_KEY }}
+          SERVICE_ID: ${{ secrets.EMAILJS_SERVICE_ID }}
+          TEMPLATE_ID: ${{ secrets.EMAILJS_TEMPLATE_ID }}
+        run: |
+          echo "Configuring EmailJS with provided secrets..."
+          
+          # Replace placeholders and verify each replacement
+          sed -i "s|__EMAILJS_PUBLIC_KEY__|${PUBLIC_KEY}|g" index.html
+          if grep -q "__EMAILJS_PUBLIC_KEY__" index.html; then
+            echo "Error: Public key was not replaced"
+            exit 1
+          fi
+          
+          sed -i "s|__EMAILJS_SERVICE_ID__|${SERVICE_ID}|g" index.html
+          if grep -q "__EMAILJS_SERVICE_ID__" index.html; then
+            echo "Error: Service ID was not replaced"
+            exit 1
+          fi
+          
+          sed -i "s|__EMAILJS_TEMPLATE_ID__|${TEMPLATE_ID}|g" index.html
+          if grep -q "__EMAILJS_TEMPLATE_ID__" index.html; then
+            echo "Error: Template ID was not replaced"
+            exit 1
+          fi
+          
+          echo "EmailJS configuration completed successfully"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-      
+    needs: build
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Debug Secrets Availability
-        run: |
-          if [ -n "${{ secrets.EMAILJS_PUBLIC_KEY }}" ]; then
-            echo "EMAILJS_PUBLIC_KEY is set"
-          else
-            echo "EMAILJS_PUBLIC_KEY is missing"
-          fi
-          if [ -n "${{ secrets.EMAILJS_SERVICE_ID }}" ]; then
-            echo "EMAILJS_SERVICE_ID is set"
-          else
-            echo "EMAILJS_SERVICE_ID is missing"
-          fi
-          if [ -n "${{ secrets.EMAILJS_TEMPLATE_ID }}" ]; then
-            echo "EMAILJS_TEMPLATE_ID is set"
-          else
-            echo "EMAILJS_TEMPLATE_ID is missing"
-          fi
-
-      - name: Configure EmailJS
-        env:
-          EMAILJS_PUBLIC_KEY: ${{ secrets.EMAILJS_PUBLIC_KEY }}
-          EMAILJS_SERVICE_ID: ${{ secrets.EMAILJS_SERVICE_ID }}
-          EMAILJS_TEMPLATE_ID: ${{ secrets.EMAILJS_TEMPLATE_ID }}
-        run: |
-          # Show debug information (length of values)
-          echo "Public Key length: ${#EMAILJS_PUBLIC_KEY}"
-          echo "Service ID length: ${#EMAILJS_SERVICE_ID}"
-          echo "Template ID length: ${#EMAILJS_TEMPLATE_ID}"
-          
-          # Replace all EmailJS configuration placeholders
-          sed -i "s/__EMAILJS_PUBLIC_KEY__/$EMAILJS_PUBLIC_KEY/g" index.html
-          sed -i "s/__EMAILJS_SERVICE_ID__/$EMAILJS_SERVICE_ID/g" index.html
-          sed -i "s/__EMAILJS_TEMPLATE_ID__/$EMAILJS_TEMPLATE_ID/g" index.html
-          
-          # Verify the replacements
-          echo "Checking if placeholders were replaced:"
-          grep -l "__EMAILJS" index.html || echo "All placeholders replaced successfully"
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: .         # The folder the action should deploy
-          branch: gh-pages  # The branch the action should deploy to
-          clean: true      # Automatically remove deleted files from the deployment 
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 

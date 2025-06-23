@@ -310,8 +310,14 @@
                 const SERVICE_ID = '__EMAILJS_SERVICE_ID__';
                 const TEMPLATE_ID = '__EMAILJS_TEMPLATE_ID__';
 
+                console.log('Initializing EmailJS with:', {
+                    publicKey: PUBLIC_KEY,
+                    serviceId: SERVICE_ID,
+                    templateId: TEMPLATE_ID
+                });
+
                 // Initialize EmailJS
-                emailjs.init(PUBLIC_KEY);
+                emailjs.init(PUBLIC_KEY, { publicKey: PUBLIC_KEY });
                 
                 // Store configuration globally
                 window.EMAILJS_CONFIG = {
