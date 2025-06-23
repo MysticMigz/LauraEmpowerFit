@@ -398,6 +398,14 @@ window.addEventListener('scroll', animateOnScroll);
 const contactForm = document.getElementById('contactForm');
 
 if (contactForm) {
+    // Log EmailJS configuration on page load
+    console.log('EmailJS Config Status:', {
+        configExists: !!window.EMAILJS_CONFIG,
+        serviceId: window?.EMAILJS_CONFIG?.SERVICE_ID,
+        templateId: window?.EMAILJS_CONFIG?.TEMPLATE_ID,
+        userId: window?.EMAILJS_CONFIG?.USER_ID
+    });
+
     contactForm.addEventListener('submit', function(event) {
         event.preventDefault();
         
@@ -413,17 +421,24 @@ if (contactForm) {
 
         // Get form data
         const formData = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            goal: document.getElementById('goal').value,
+            from_name: document.getElementById('name').value,
+            reply_to: document.getElementById('email').value,
+            phone_number: document.getElementById('phone').value,
+            goal_type: document.getElementById('goal').value,
             message: document.getElementById('message').value,
-            additional: document.getElementById('additional').value || ''
+            additional_info: document.getElementById('additional').value || ''
         };
+
+        // Log the form data being sent
+        console.log('Preparing to send form data:', formData);
 
         // Verify EmailJS configuration
         if (!window.EMAILJS_CONFIG || !window.EMAILJS_CONFIG.SERVICE_ID || !window.EMAILJS_CONFIG.TEMPLATE_ID) {
-            console.error('EmailJS configuration missing or incomplete');
+            console.error('EmailJS configuration missing or incomplete:', {
+                config: window.EMAILJS_CONFIG,
+                serviceId: window?.EMAILJS_CONFIG?.SERVICE_ID,
+                templateId: window?.EMAILJS_CONFIG?.TEMPLATE_ID
+            });
             document.getElementById('error-message').textContent = 'Sorry, the contact form is not properly configured. Please email me directly at laura.empowerfit@gmail.com';
             document.getElementById('error-message').style.display = 'block';
             submitButton.textContent = originalButtonText;
@@ -431,21 +446,22 @@ if (contactForm) {
             return;
         }
 
-        // Send email using EmailJS
-        emailjs.send(
+        // Send email using EmailJS with complete configuration
+        emailjs.sendForm(
             window.EMAILJS_CONFIG.SERVICE_ID,
             window.EMAILJS_CONFIG.TEMPLATE_ID,
-            formData
+            event.target,
+            window.EMAILJS_CONFIG.USER_ID
         ).then(function(response) {
+            console.log('EmailJS Response:', response);
             if (response.status === 200) {
-                console.log('SUCCESS!', response.status, response.text);
                 document.getElementById('success-message').style.display = 'block';
                 document.getElementById('contactForm').reset();
             } else {
                 throw new Error('Unexpected response status: ' + response.status);
             }
         }).catch(function(error) {
-            console.error('Failed to send message:', error);
+            console.error('EmailJS Error Details:', error);
             document.getElementById('error-message').textContent = 'Sorry, something went wrong. Please try again or email me directly at laura.empowerfit@gmail.com';
             document.getElementById('error-message').style.display = 'block';
         }).finally(function() {
