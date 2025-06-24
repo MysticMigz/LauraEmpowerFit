@@ -2486,6 +2486,9 @@ footer {
     position: relative;
     overflow: hidden;
     width: 100%;
+    height: 500px;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
 
 #videoCarousel .carousel-track {
@@ -2495,42 +2498,114 @@ footer {
 }
 
 #videoCarousel .carousel-item {
-    min-width: 100%;
-    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#videoCarousel .carousel-item.active {
+    opacity: 1;
+    visibility: visible;
+    z-index: 1;
+}
+
+#videoCarousel video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #000;
 }
 
 #videoCarousel .carousel-control {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: #00000080;
-    color: white;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.9);
     border: none;
-    font-size: 2rem;
-    z-index: 2;
-    padding: 0.2em 0.5em;
+    border-radius: 50%;
     cursor: pointer;
+    font-size: 24px;
+    color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+#videoCarousel .carousel-control:hover {
+    background: white;
+    transform: translateY(-50%) scale(1.1);
 }
 
 #videoCarousel .carousel-control.prev {
-    left: 10px;
+    left: 20px;
 }
 
 #videoCarousel .carousel-control.next {
-    right: 10px;
+    right: 20px;
 }
 
-/* Ensure video fills carousel item properly */
-#videoCarousel video {
-    display: block;
-    width: 100%;
-    height: auto;
-    object-fit: cover;
+#videoCarousel .carousel-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 2;
+    padding: 8px 15px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+#videoCarousel .carousel-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#videoCarousel .carousel-dot.active {
+    background: white;
+    transform: scale(1.2);
 }
 
 @media (max-width: 768px) {
+    #videoCarousel.carousel {
+        height: 350px;
+    }
+
     #videoCarousel .carousel-control {
-        font-size: 1.5rem;
-        padding: 0.15em 0.4em;
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+
+    #videoCarousel .carousel-control.prev {
+        left: 10px;
+    }
+
+    #videoCarousel .carousel-control.next {
+        right: 10px;
+    }
+
+    #videoCarousel .carousel-dots {
+        bottom: 15px;
+        padding: 6px 12px;
+    }
+
+    #videoCarousel .carousel-dot {
+        width: 8px;
+        height: 8px;
     }
 } 
