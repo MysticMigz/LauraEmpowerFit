@@ -216,7 +216,7 @@ nav ul li a:hover::after {
 
 /* Hero Section */
 .hero {
-    padding: 250px 0 100px;
+    padding: 300px 0 100px;
     position: relative;
     overflow: hidden;
     background-color: #fff;
