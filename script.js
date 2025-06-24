@@ -593,4 +593,125 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize reviews carousel
     initReviewsCarousel();
+});
+
+// Video Carousel Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const carousel = document.getElementById('videoCarousel');
+    if (!carousel) return;
+
+    const track = carousel.querySelector('.carousel-track');
+    const items = Array.from(track.children);
+    let currentIndex = 0;
+
+    // Initialize videos
+    items.forEach(item => {
+        const video = item.querySelector('video');
+        if (video) {
+            video.addEventListener('play', () => {
+                // Pause all other videos when one starts playing
+                items.forEach(otherItem => {
+                    const otherVideo = otherItem.querySelector('video');
+                    if (otherVideo && otherVideo !== video) {
+                        otherVideo.pause();
+                    }
+                });
+            });
+        }
+    });
+
+    function showSlide(index) {
+        // Pause current video if playing
+        const currentVideo = items[currentIndex].querySelector('video');
+        if (currentVideo) {
+            currentVideo.pause();
+        }
+
+        track.style.transform = `translateX(-${index * 100}%)`;
+        currentIndex = index;
+
+        // Update dots if they exist
+        const dots = carousel.querySelectorAll('.carousel-dot');
+        if (dots.length) {
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+    }
+
+    // Navigation buttons
+    carousel.querySelector('.next').addEventListener('click', () => {
+        showSlide((currentIndex + 1) % items.length);
+    });
+
+    carousel.querySelector('.prev').addEventListener('click', () => {
+        showSlide((currentIndex - 1 + items.length) % items.length);
+    });
+
+    // Touch/Swipe Support
+    let startX = 0;
+    let isDragging = false;
+
+    track.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        isDragging = true;
+        // Prevent default to avoid page scroll while swiping
+        e.preventDefault();
+    }, { passive: false });
+
+    track.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        
+        const currentX = e.touches[0].clientX;
+        const diff = startX - currentX;
+        const moveX = -(currentIndex * 100) - (diff / carousel.offsetWidth * 100);
+        
+        // Add some resistance at the edges
+        if ((currentIndex === 0 && diff < 0) || (currentIndex === items.length - 1 && diff > 0)) {
+            track.style.transform = `translateX(${moveX / 3}%)`;
+        } else {
+            track.style.transform = `translateX(${moveX}%)`;
+        }
+    });
+
+    track.addEventListener('touchend', (e) => {
+        isDragging = false;
+        const endX = e.changedTouches[0].clientX;
+        const diff = startX - endX;
+
+        if (Math.abs(diff) > 50) { // Threshold for slide change
+            if (diff > 0) {
+                showSlide(Math.min(currentIndex + 1, items.length - 1));
+            } else {
+                showSlide(Math.max(currentIndex - 1, 0));
+            }
+        } else {
+            // Return to current slide if swipe wasn't strong enough
+            showSlide(currentIndex);
+        }
+    });
+
+    // Keyboard navigation
+    carousel.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            showSlide((currentIndex - 1 + items.length) % items.length);
+        } else if (e.key === 'ArrowRight') {
+            showSlide((currentIndex + 1) % items.length);
+        }
+    });
+
+    // Create and update dots
+    const dotsContainer = carousel.querySelector('.carousel-dots');
+    if (dotsContainer) {
+        items.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.classList.add('carousel-dot');
+            if (i === currentIndex) dot.classList.add('active');
+            dot.addEventListener('click', () => showSlide(i));
+            dotsContainer.appendChild(dot);
+        });
+    }
+
+    // Show first slide
+    showSlide(0);
 }); 

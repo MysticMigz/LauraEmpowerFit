@@ -2479,4 +2479,58 @@ footer {
     padding-top: 70px;
     margin-top: 50px;
     background-color: #fff;
+}
+
+/* Video Carousel */
+#videoCarousel.carousel {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+#videoCarousel .carousel-track {
+    display: flex;
+    transition: transform 0.4s ease;
+    touch-action: pan-y;
+}
+
+#videoCarousel .carousel-item {
+    min-width: 100%;
+    box-sizing: border-box;
+}
+
+#videoCarousel .carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #00000080;
+    color: white;
+    border: none;
+    font-size: 2rem;
+    z-index: 2;
+    padding: 0.2em 0.5em;
+    cursor: pointer;
+}
+
+#videoCarousel .carousel-control.prev {
+    left: 10px;
+}
+
+#videoCarousel .carousel-control.next {
+    right: 10px;
+}
+
+/* Ensure video fills carousel item properly */
+#videoCarousel video {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    #videoCarousel .carousel-control {
+        font-size: 1.5rem;
+        padding: 0.15em 0.4em;
+    }
 } 
