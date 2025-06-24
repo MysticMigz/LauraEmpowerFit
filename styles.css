@@ -719,8 +719,8 @@ nav ul li a:hover::after {
 /* Mobile Optimizations */
 @media (max-width: 768px) {
     .reviews {
-        padding: 60px 0 100px;
-        margin-bottom: 100px;
+        padding: 60px 0 80px;
+        margin-bottom: 60px;
     }
 
     .reviews h2 {
@@ -729,81 +729,99 @@ nav ul li a:hover::after {
     }
 
     .reviews-carousel {
-        padding: 10px 0 30px;
+        padding: 0;
+        margin: 0 15px;
     }
 
     .review-card {
-        padding: 25px 20px;
-        margin: 0 10px 15px;
-        font-size: 0.95rem;
+        padding: 30px 25px;
+        margin: 0;
+        font-size: 1rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
 
     .review-text {
-        line-height: 1.5;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+
+    .review-text p {
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    .star-rating {
+        font-size: 18px;
+        margin: 15px 0;
+    }
+
+    .review-author {
+        font-size: 0.9rem;
+        margin-top: 10px;
     }
 
     .carousel-control {
         width: 35px;
         height: 35px;
         font-size: 18px;
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
 
     .carousel-control.prev {
-        left: -10px;
+        left: -8px;
     }
 
     .carousel-control.next {
-        right: -10px;
+        right: -8px;
     }
 
-    .star-rating {
-        font-size: 20px;
-        margin: 10px 0;
-    }
-
-    .review-author {
-        font-size: 0.9rem;
-    }
-
-    /* Touch-specific styles */
-    .carousel-control {
-        opacity: 0.8;
-        background: rgba(255, 255, 255, 0.9);
-    }
-
-    /* Improve touch targets */
-    .carousel-dot {
-        width: 12px;
-        height: 12px;
-        margin: 0 5px;
+    .carousel-dots {
+        margin-top: 25px;
+        gap: 8px;
     }
 }
 
-/* Small mobile devices */
-@media (max-width: 480px) {
+@media (max-width: 576px) {
     .reviews {
-        padding: 50px 0 80px;
-        margin-bottom: 80px;
+        padding: 50px 0 70px;
+        margin-bottom: 50px;
+    }
+
+    .reviews h2 {
+        font-size: 1.8rem;
+        margin-bottom: 25px;
     }
 
     .review-card {
-        padding: 20px 15px;
-        margin: 0 5px 10px;
+        padding: 25px 20px;
+        border-radius: 12px;
+    }
+
+    .review-text p {
         font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .star-rating {
+        font-size: 16px;
+        margin: 12px 0;
+    }
+
+    .review-author {
+        font-size: 0.85rem;
     }
 
     .carousel-control {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
         font-size: 16px;
     }
 
-    .carousel-control.prev {
-        left: -5px;
-    }
-
-    .carousel-control.next {
-        right: -5px;
+    .carousel-dots {
+        margin-top: 20px;
+        gap: 6px;
     }
 }
 
