@@ -70,11 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize reviews carousel
     initReviewsCarousel();
     
-    // Initialize video carousel
-    const videoCarousel = document.getElementById('videoCarousel');
-    if (videoCarousel) {
-        initVideoCarousel(videoCarousel);
-    }
+    // Remove the entire initVideoCarousel function and any code that references it, including DOMContentLoaded logic for videoCarousel.
 });
 
 // Reviews Carousel Functionality
@@ -82,24 +78,24 @@ function initReviewsCarousel() {
     const carousel = document.querySelector('.reviews-carousel');
     if (!carousel) return;
 
-    const items = Array.from(carousel.querySelectorAll('.carousel-item'));
-    const prevBtn = carousel.querySelector('.carousel-control.prev');
-    const nextBtn = carousel.querySelector('.carousel-control.next');
-    const dotsContainer = carousel.querySelector('.carousel-dots');
+        const items = Array.from(carousel.querySelectorAll('.carousel-item'));
+        const prevBtn = carousel.querySelector('.carousel-control.prev');
+        const nextBtn = carousel.querySelector('.carousel-control.next');
+        const dotsContainer = carousel.querySelector('.carousel-dots');
 
-    let currentIndex = items.findIndex(item => item.classList.contains('active'));
-    if (currentIndex === -1) currentIndex = 0;
+        let currentIndex = items.findIndex(item => item.classList.contains('active'));
+        if (currentIndex === -1) currentIndex = 0;
 
-    // Create dots for navigation
-    items.forEach((_, index) => {
-        const dot = document.createElement('div');
-        dot.classList.add('carousel-dot');
-        if (index === currentIndex) dot.classList.add('active');
-        dot.addEventListener('click', () => changeSlide(index));
-        dotsContainer.appendChild(dot);
-    });
+        // Create dots for navigation
+        items.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('carousel-dot');
+            if (index === currentIndex) dot.classList.add('active');
+            dot.addEventListener('click', () => changeSlide(index));
+            dotsContainer.appendChild(dot);
+        });
 
-    const dots = Array.from(dotsContainer.querySelectorAll('.carousel-dot'));
+        const dots = Array.from(dotsContainer.querySelectorAll('.carousel-dot'));
 
     function changeSlide(newIndex) {
         if (newIndex === currentIndex) return;
@@ -139,8 +135,8 @@ function initReviewsCarousel() {
     }
 
     // Touch events for mobile
-    let touchStartX = 0;
-    let touchEndX = 0;
+        let touchStartX = 0;
+        let touchEndX = 0;
 
     carousel.addEventListener('touchstart', e => {
         touchStartX = e.changedTouches[0].screenX;
@@ -188,194 +184,6 @@ function initReviewsCarousel() {
             changeSlide(newIndex);
         }
     });
-}
-
-// Video Carousel Functionality
-function initVideoCarousel(carousel) {
-    const items = Array.from(carousel.querySelectorAll('.carousel-item'));
-    const prevBtn = carousel.querySelector('.carousel-control.prev');
-    const nextBtn = carousel.querySelector('.carousel-control.next');
-    const dotsContainer = carousel.querySelector('.carousel-dots');
-    
-    let currentIndex = items.findIndex(item => item.classList.contains('active'));
-    if (currentIndex === -1) currentIndex = 0;
-
-    // Initialize videos
-    items.forEach((item, index) => {
-        const video = item.querySelector('video');
-        if (video) {
-            // Set video attributes for better mobile compatibility
-            video.setAttribute('playsinline', '');
-            video.setAttribute('muted', '');
-            video.muted = true; // Explicitly set muted
-            
-            // Handle video loading
-            video.addEventListener('loadedmetadata', () => {
-                console.log(`Video ${index + 1} metadata loaded`);
-                if (index === currentIndex) {
-                    playVideo(video);
-                }
-            });
-
-            // Handle video errors
-            video.addEventListener('error', (e) => {
-                console.error(`Video ${index + 1} error:`, e);
-                item.innerHTML = '<div class="video-error">Video unavailable</div>';
-            });
-        }
-    });
-
-    function playVideo(video) {
-        video.play().then(() => {
-            console.log('Video playing successfully');
-        }).catch(e => {
-            console.log('Autoplay prevented:', e);
-        });
-    }
-
-    function pauseAllVideos() {
-        items.forEach(item => {
-            const video = item.querySelector('video');
-            if (video) {
-                video.pause();
-            }
-        });
-    }
-
-    // Handle slide changes
-    function changeSlide(newIndex) {
-        if (newIndex === currentIndex) return;
-
-        // Pause current video
-        const currentVideo = items[currentIndex].querySelector('video');
-        if (currentVideo) {
-            currentVideo.pause();
-        }
-
-        // Update carousel
-        items[currentIndex].classList.remove('active');
-        dots[currentIndex].classList.remove('active');
-        
-        items[newIndex].classList.add('active');
-        dots[newIndex].classList.add('active');
-
-        // Play new video
-        const newVideo = items[newIndex].querySelector('video');
-        if (newVideo) {
-            playVideo(newVideo);
-        }
-
-        currentIndex = newIndex;
-    }
-
-    // Create dots
-    items.forEach((_, index) => {
-        const dot = document.createElement('div');
-        dot.classList.add('carousel-dot');
-        if (index === currentIndex) dot.classList.add('active');
-        dot.addEventListener('click', () => {
-            stopAutoplay();
-            changeSlide(index);
-            startAutoplay();
-        });
-        dotsContainer.appendChild(dot);
-    });
-
-    const dots = Array.from(dotsContainer.querySelectorAll('.carousel-dot'));
-
-    // Touch events
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    carousel.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
-        stopAutoplay();
-    });
-
-    carousel.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-        startAutoplay();
-    });
-
-    function handleSwipe() {
-        const swipeThreshold = 50;
-        const diff = touchEndX - touchStartX;
-
-        if (Math.abs(diff) > swipeThreshold) {
-            if (diff > 0) {
-                // Swiped right
-                changeSlide((currentIndex - 1 + items.length) % items.length);
-            } else {
-                // Swiped left
-                changeSlide((currentIndex + 1) % items.length);
-            }
-        }
-    }
-
-    // Button controls
-    prevBtn.addEventListener('click', () => {
-        stopAutoplay();
-        changeSlide((currentIndex - 1 + items.length) % items.length);
-        startAutoplay();
-    });
-
-    nextBtn.addEventListener('click', () => {
-        stopAutoplay();
-        changeSlide((currentIndex + 1) % items.length);
-        startAutoplay();
-    });
-
-    // Autoplay
-    let autoplayInterval;
-
-    function startAutoplay() {
-        autoplayInterval = setInterval(() => {
-            changeSlide((currentIndex + 1) % items.length);
-        }, 8000); // Longer interval for videos
-    }
-
-    function stopAutoplay() {
-        clearInterval(autoplayInterval);
-    }
-
-    // Pause on hover/focus
-    carousel.addEventListener('mouseenter', stopAutoplay);
-    carousel.addEventListener('mouseleave', startAutoplay);
-    carousel.addEventListener('focus', stopAutoplay, true);
-    carousel.addEventListener('blur', startAutoplay, true);
-
-    // Keyboard navigation
-    carousel.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            stopAutoplay();
-            changeSlide((currentIndex - 1 + items.length) % items.length);
-            startAutoplay();
-        } else if (e.key === 'ArrowRight') {
-            e.preventDefault();
-            stopAutoplay();
-            changeSlide((currentIndex + 1) % items.length);
-            startAutoplay();
-        }
-    });
-
-    // Handle visibility change
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            pauseAllVideos();
-            stopAutoplay();
-        } else {
-            const currentVideo = items[currentIndex].querySelector('video');
-            if (currentVideo) {
-                playVideo(currentVideo);
-            }
-            startAutoplay();
-        }
-    });
-
-    // Start autoplay
-    startAutoplay();
 }
 
 // Sticky Header with reveal animation
@@ -486,14 +294,14 @@ if (contactForm) {
 
             // Prepare the template parameters from form data
             const formData = new FormData(event.target);
-            const templateParams = {
+        const templateParams = {
                 from_name: formData.get('from_name'),
                 reply_to: formData.get('reply_to'),
                 phone_number: formData.get('phone_number'),
                 goal_type: formData.get('goal_type'),
                 message: formData.get('message'),
                 additional_info: formData.get('additional_info') || ''
-            };
+        };
 
             // Send email using EmailJS send method
             emailjs.send(
@@ -518,9 +326,9 @@ if (contactForm) {
             document.getElementById('error-message').textContent = 'Sorry, the contact form is not properly configured. Please email me directly at laura.empowerfit@gmail.com';
             document.getElementById('error-message').style.display = 'block';
         } finally {
-            // Reset button state
+                // Reset button state
             submitButton.textContent = originalButtonText;
-            submitButton.disabled = false;
+                submitButton.disabled = false;
         }
     });
 }
