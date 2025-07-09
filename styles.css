@@ -2493,3 +2493,21 @@ footer {
         font-size: 20px;
     }
 } 
+
+.hero-image {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-image video {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 15px;
+  background: #000;
+  max-width: 100%;
+} 
