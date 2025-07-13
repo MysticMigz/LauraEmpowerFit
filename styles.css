@@ -2526,3 +2526,60 @@ footer {
   background: #000;
   max-width: 100%;
 } 
+
+/* Remove any fixed height for carousel on reviews section */
+.reviews-carousel {
+    min-height: unset !important;
+    height: auto !important;
+}
+
+.carousel-item {
+    height: auto !important;
+    min-height: unset !important;
+    display: flex;
+    align-items: stretch;
+}
+
+.review-card {
+    height: auto !important;
+    min-height: unset !important;
+    max-height: none !important;
+    overflow: visible !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .reviews-carousel {
+        min-height: unset !important;
+        height: auto !important;
+    }
+    .carousel-item {
+        height: auto !important;
+        min-height: unset !important;
+    }
+    .review-card {
+        height: auto !important;
+        min-height: unset !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .reviews-carousel {
+        min-height: unset !important;
+        height: auto !important;
+    }
+    .carousel-item {
+        height: auto !important;
+        min-height: unset !important;
+    }
+    .review-card {
+        height: auto !important;
+        min-height: unset !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+} 
