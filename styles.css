@@ -2577,3 +2577,15 @@ footer {
         display: block;
     }
 } 
+
+/* Add extra bottom padding to review cards on mobile for long text */
+@media (max-width: 768px) {
+    .review-card {
+        padding-bottom: 60px;
+    }
+}
+@media (max-width: 576px) {
+    .review-card {
+        padding-bottom: 80px;
+    }
+} 
