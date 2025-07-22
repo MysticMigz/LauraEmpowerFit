@@ -168,6 +168,7 @@ header .container {
     font-weight: 700;
     background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -1804,6 +1805,8 @@ footer {
     animation: slideInUp 0.6s ease-out;
     padding: 25px 30px;
     background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(56, 142, 60, 0.1) 100%);
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
     border: 2px solid rgba(76, 175, 80, 0.3);
     border-radius: 15px;
     color: #2e7d32;
@@ -1826,6 +1829,8 @@ footer {
     animation: slideInUp 0.6s ease-out;
     padding: 25px 30px;
     background: linear-gradient(135deg, rgba(244, 67, 54, 0.1) 0%, rgba(211, 47, 47, 0.1) 100%);
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
     border: 2px solid rgba(244, 67, 54, 0.3);
     border-radius: 15px;
     color: #c62828;
@@ -2114,9 +2119,8 @@ footer {
         font-size: 1.5rem;
     }
     
-    .hero-image {
-        width: 100%;
-        max-width: 100%;
+    .hero-content p {
+        font-size: 0.95rem;
     }
     
     #videoCarousel.carousel {
@@ -2587,5 +2591,35 @@ footer {
 @media (max-width: 576px) {
     .review-card {
         padding-bottom: 80px;
+    }
+} 
+
+@media (max-width: 576px) {
+    .reviews {
+        padding: 30px 0 40px;
+        margin-bottom: 30px;
+    }
+    .reviews h2 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+    .reviews-carousel {
+        padding-top: 0;
+        padding-bottom: 20px;
+    }
+    .review-card {
+        margin-top: 0;
+        padding: 15px 5vw 40px 5vw;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .reviews h2 {
+        font-size: 1.1rem;
+    }
+    .review-card {
+        font-size: 0.9rem;
+        padding: 10px 2vw 30px 2vw;
     }
 } 
