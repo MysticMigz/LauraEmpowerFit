@@ -2630,3 +2630,175 @@ footer {
         padding: 10px 2vw 30px 2vw;
     }
 } 
+
+/* --- Transformation Stories Carousel (Reviews) --- */
+.reviews {
+  padding: 90px 0;
+  background: none;
+}
+.reviews h2 {
+  text-align: center;
+  color: var(--accent-color);
+  font-size: 2.3rem;
+  margin-bottom: 40px;
+  font-family: var(--heading-font);
+}
+.reviews-carousel {
+  position: relative;
+  max-width: 500px;
+  margin: 0 auto;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.carousel-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s, visibility 0.5s;
+  z-index: 0;
+  display: block;
+}
+.carousel-item.active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 1;
+}
+.review-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(106, 13, 173, 0.10);
+  padding: 36px 32px;
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+  transition: box-shadow 0.3s;
+}
+.review-card:hover {
+  box-shadow: 0 12px 40px rgba(106, 13, 173, 0.18);
+}
+.review-text {
+  font-style: italic;
+  color: var(--text-color);
+  margin-bottom: 18px;
+  font-size: 1.08rem;
+  line-height: 1.7;
+}
+.star-rating {
+  color: #FFD700;
+  font-size: 1.3rem;
+  margin: 10px 0 8px 0;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+.review-author {
+  color: var(--accent-color);
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(106, 13, 173, 0.10);
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.carousel-control:hover {
+  background: var(--accent-color);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(106, 13, 173, 0.18);
+}
+.carousel-control.prev {
+  left: -50px;
+}
+.carousel-control.next {
+  right: -50px;
+}
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
+}
+.carousel-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #e0afff;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s, transform 0.2s;
+}
+.carousel-dot.active {
+  background: var(--accent-color);
+  border-color: var(--secondary-color);
+  transform: scale(1.2);
+}
+@media (max-width: 600px) {
+  .reviews {
+    padding: 50px 0;
+  }
+  .reviews h2 {
+    font-size: 1.4rem;
+    margin-bottom: 22px;
+  }
+  .reviews-carousel {
+    min-height: 220px;
+    max-width: 98vw;
+  }
+  .review-card {
+    padding: 18px 6vw;
+    max-width: 98vw;
+    font-size: 0.98rem;
+  }
+  .carousel-control {
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
+    left: 0;
+    right: 0;
+    top: 100%;
+    transform: none;
+    margin-top: 10px;
+  }
+  .carousel-control.prev {
+    left: 20vw;
+    right: auto;
+    top: 100%;
+  }
+  .carousel-control.next {
+    right: 20vw;
+    left: auto;
+    top: 100%;
+  }
+  .carousel-dots {
+    margin-top: 18px;
+    gap: 7px;
+  }
+  .carousel-dot {
+    width: 9px;
+    height: 9px;
+  }
+} 
