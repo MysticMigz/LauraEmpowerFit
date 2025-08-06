@@ -63,125 +63,139 @@ navLinks.forEach(link => {
 
 console.log('Script loaded');
 
-// Carousel Functionality
+// DOM Content Loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded');
     
-    // Initialize reviews carousel
+    // Initialize Reviews Carousel
     initReviewsCarousel();
-    
-    // Remove the entire initVideoCarousel function and any code that references it, including DOMContentLoaded logic for videoCarousel.
 });
 
 // Reviews Carousel Functionality
 function initReviewsCarousel() {
     const carousel = document.querySelector('.reviews-carousel');
     if (!carousel) return;
-
-        const items = Array.from(carousel.querySelectorAll('.carousel-item'));
-        const prevBtn = carousel.querySelector('.carousel-control.prev');
-        const nextBtn = carousel.querySelector('.carousel-control.next');
-        const dotsContainer = carousel.querySelector('.carousel-dots');
-
-        let currentIndex = items.findIndex(item => item.classList.contains('active'));
-        if (currentIndex === -1) currentIndex = 0;
-
-        // Create dots for navigation
-        items.forEach((_, index) => {
-            const dot = document.createElement('div');
-            dot.classList.add('carousel-dot');
-            if (index === currentIndex) dot.classList.add('active');
-            dot.addEventListener('click', () => changeSlide(index));
-            dotsContainer.appendChild(dot);
-        });
-
-        const dots = Array.from(dotsContainer.querySelectorAll('.carousel-dot'));
-
-    function changeSlide(newIndex) {
-        if (newIndex === currentIndex) return;
-        
-        items[currentIndex].classList.remove('active');
-        dots[currentIndex].classList.remove('active');
-        
-        items[newIndex].classList.add('active');
-        dots[newIndex].classList.add('active');
-        
-        currentIndex = newIndex;
-    }
-
-    // Event listeners for controls
-    prevBtn.addEventListener('click', () => {
-        const newIndex = (currentIndex - 1 + items.length) % items.length;
-        changeSlide(newIndex);
-    });
-
-    nextBtn.addEventListener('click', () => {
-        const newIndex = (currentIndex + 1) % items.length;
-        changeSlide(newIndex);
-    });
-
-    // Auto-advance slides
+    
+    const cards = carousel.querySelectorAll('.review-card');
+    const prevBtn = carousel.querySelector('.carousel-control.prev');
+    const nextBtn = carousel.querySelector('.carousel-control.next');
+    const dotsContainer = carousel.querySelector('.carousel-dots');
+    
+    let currentIndex = 0;
     let autoplayInterval;
-
+    
+    // Create dots
+    cards.forEach((_, index) => {
+        const dot = document.createElement('button');
+        dot.className = 'carousel-dot';
+        dot.setAttribute('aria-label', `Go to review ${index + 1}`);
+        dot.addEventListener('click', () => goToSlide(index));
+        dotsContainer.appendChild(dot);
+    });
+    
+    const dots = dotsContainer.querySelectorAll('.carousel-dot');
+    
+    function updateCarousel() {
+        cards.forEach((card, index) => {
+            card.classList.remove('active');
+            if (dots[index]) dots[index].classList.remove('active');
+        });
+        
+        cards[currentIndex].classList.add('active');
+        if (dots[currentIndex]) dots[currentIndex].classList.add('active');
+    }
+    
+    function goToSlide(index) {
+        currentIndex = index;
+        updateCarousel();
+        resetAutoplay();
+    }
+    
+    function nextSlide() {
+        currentIndex = (currentIndex + 1) % cards.length;
+        updateCarousel();
+        resetAutoplay();
+    }
+    
+    function prevSlide() {
+        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+        updateCarousel();
+        resetAutoplay();
+    }
+    
+    function resetAutoplay() {
+        if (autoplayInterval) {
+            clearInterval(autoplayInterval);
+        }
+        startAutoplay();
+    }
+    
     function startAutoplay() {
-        autoplayInterval = setInterval(() => {
-            const newIndex = (currentIndex + 1) % items.length;
-            changeSlide(newIndex);
-        }, 5000);
+        autoplayInterval = setInterval(nextSlide, 5000);
     }
-
-    function stopAutoplay() {
-        clearInterval(autoplayInterval);
-    }
-
-    // Touch events for mobile
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-    carousel.addEventListener('touchstart', e => {
+    
+    // Event listeners
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+    
+    // Keyboard navigation
+    carousel.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            prevSlide();
+        } else if (e.key === 'ArrowRight') {
+            nextSlide();
+        }
+    });
+    
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    carousel.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
     });
-
-    carousel.addEventListener('touchend', e => {
+    
+    carousel.addEventListener('touchend', (e) => {
         touchEndX = e.changedTouches[0].screenX;
         handleSwipe();
     });
-
+    
     function handleSwipe() {
         const swipeThreshold = 50;
-        const diff = touchEndX - touchStartX;
-
+        const diff = touchStartX - touchEndX;
+        
         if (Math.abs(diff) > swipeThreshold) {
             if (diff > 0) {
-                // Swiped right
-                const newIndex = (currentIndex - 1 + items.length) % items.length;
-                changeSlide(newIndex);
+                nextSlide();
             } else {
-                // Swiped left
-                const newIndex = (currentIndex + 1) % items.length;
-                changeSlide(newIndex);
+                prevSlide();
             }
         }
     }
-
-    // Start autoplay
-    startAutoplay();
-
+    
     // Pause autoplay on hover
-    carousel.addEventListener('mouseenter', stopAutoplay);
-    carousel.addEventListener('mouseleave', startAutoplay);
-
-    // Keyboard navigation
-    carousel.setAttribute('tabindex', '0');
-    carousel.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            const newIndex = (currentIndex - 1 + items.length) % items.length;
-            changeSlide(newIndex);
-        } else if (e.key === 'ArrowRight') {
-            e.preventDefault();
-            const newIndex = (currentIndex + 1) % items.length;
-            changeSlide(newIndex);
+    carousel.addEventListener('mouseenter', () => {
+        if (autoplayInterval) {
+            clearInterval(autoplayInterval);
+        }
+    });
+    
+    carousel.addEventListener('mouseleave', () => {
+        startAutoplay();
+    });
+    
+    // Initialize
+    updateCarousel();
+    startAutoplay();
+    
+    // Pause autoplay when tab is not visible
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            if (autoplayInterval) {
+                clearInterval(autoplayInterval);
+            }
+        } else {
+            startAutoplay();
         }
     });
 }
@@ -213,7 +227,7 @@ window.addEventListener('scroll', () => {
 
 // Animate elements when they come into view
 const animateOnScroll = () => {
-    const elements = document.querySelectorAll('.service-card, .review-card, .about-image, .about-text');
+    const elements = document.querySelectorAll('.service-card, .about-image, .about-text');
     
     elements.forEach(element => {
         const elementPosition = element.getBoundingClientRect().top;
@@ -221,8 +235,6 @@ const animateOnScroll = () => {
         
         if (elementPosition < screenPosition) {
             if (element.classList.contains('service-card')) {
-                element.style.animation = 'fadeInUp 0.8s ease forwards';
-            } else if (element.classList.contains('review-card')) {
                 element.style.animation = 'fadeInUp 0.8s ease forwards';
             } else if (element.classList.contains('about-image')) {
                 element.style.animation = 'fadeInLeft 0.8s ease forwards';
@@ -235,18 +247,6 @@ const animateOnScroll = () => {
     // Staggered animation for services
     const serviceCards = document.querySelectorAll('.service-card');
     serviceCards.forEach((card, index) => {
-        const cardPosition = card.getBoundingClientRect().top;
-        const screenPosition = window.innerHeight / 1.2;
-        
-        if (cardPosition < screenPosition) {
-            card.style.opacity = '0';
-            card.style.animation = `fadeInUp 0.8s ease forwards ${index * 0.2}s`;
-        }
-    });
-    
-    // Staggered animation for reviews
-    const reviewCards = document.querySelectorAll('.review-card');
-    reviewCards.forEach((card, index) => {
         const cardPosition = card.getBoundingClientRect().top;
         const screenPosition = window.innerHeight / 1.2;
         
