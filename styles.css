@@ -711,15 +711,16 @@ nav ul li a:hover::after {
 footer {
     background-color: var(--dark-color);
     color: #fff;
-    padding: 70px 0 20px;
+    padding: 120px 0 50px;
 }
 
 .footer-content {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    margin-bottom: 50px;
+    margin-bottom: 90px;
     position: relative;
+    gap: 80px;
 }
 
 .footer-content::before {
@@ -735,7 +736,8 @@ footer {
 .footer-logo {
     flex: 1;
     min-width: 250px;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
+    margin-right: 150px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -744,8 +746,8 @@ footer {
 .footer-logo-container {
     display: flex;
     align-items: center;
-    gap: 30px;
-    margin-bottom: 20px;
+    gap: 50px;
+    margin-bottom: 40px;
     flex-wrap: nowrap;
 }
 
@@ -777,13 +779,13 @@ footer {
 .footer-links {
     flex: 1;
     min-width: 200px;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
 }
 
 .footer-links h4 {
     color: var(--primary-color);
     font-size: 1.3rem;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 
 .footer-links ul {
@@ -791,7 +793,7 @@ footer {
 }
 
 .footer-links ul li {
-    margin-bottom: 15px;
+    margin-bottom: 25px;
 }
 
 .footer-links ul li a {
@@ -808,18 +810,18 @@ footer {
 .footer-social {
     flex: 1;
     min-width: 200px;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
 }
 
 .footer-social h4 {
     color: var(--primary-color);
     font-size: 1.3rem;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 
 .social-icons {
     display: flex;
-    gap: 20px;
+    gap: 40px;
 }
 
 .social-icons a {
@@ -843,7 +845,7 @@ footer {
 
 .footer-bottom {
     text-align: center;
-    padding-top: 25px;
+    padding-top: 50px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
